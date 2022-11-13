@@ -6,7 +6,7 @@ import torch.optim as optim
 import torch.nn as nn
 import numpy as np
 import matplotlib.pyplot as plt
-from chapter1_figures import figure1, figure3
+from Chapter1.chapter1_figures import figure1, figure3
 plt.style.use('fivethirtyeight')
 
 
