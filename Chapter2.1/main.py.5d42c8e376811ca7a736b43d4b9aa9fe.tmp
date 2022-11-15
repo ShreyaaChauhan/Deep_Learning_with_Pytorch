@@ -238,8 +238,8 @@ print(sbs.total_epochs)
 # print(model.state_dict())
 
 
-# sbs.load_checkpoint(
-#     '/Users/shreyachauhan/Deep_Learning_with_Pytorch/Chapter2.1/checkpoints/latest.pth')
-# sbs.set_loaders(train_loader, val_loader)
-# sbs.train(n_epochs=80)
-# print(model.state_dict())
+sbs.load_checkpoint(
+    '/Users/shreyachauhan/Deep_Learning_with_Pytorch/Chapter2.1/checkpoints/latest.pth')
+sbs.set_loaders(train_loader, val_loader)
+sbs.train(n_epochs=80)
+print(model.state_dict())
