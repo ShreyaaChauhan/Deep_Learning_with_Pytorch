@@ -1,24 +1,27 @@
-from helper_function import *
-from engine import StepbyStep
-import random
-import numpy as np
-from PIL import Image
+from __future__ import annotations
 
-import torch
-import torch.optim as optim
-import torch.nn as nn
-import torch.nn.functional as F
-
-from torch.utils.data import DataLoader, Dataset, random_split, WeightedRandomSampler, SubsetRandomSampler
-from torchvision.transforms import Compose, ToTensor, Normalize, ToPILImage, RandomHorizontalFlip, Resize
-from helper_function import make_balanced_sampler, generate_dataset
-from engine import StepbyStep
 import matplotlib.pyplot as plt
+import torch
+import torch.nn as nn
+import torch.optim as optim
+from engine import StepbyStep
+from helper_function import generate_dataset
+from helper_function import index_splitter
+from helper_function import plot_images
+from torch.utils.data import DataLoader
+from torch.utils.data import Dataset
+from torch.utils.data import SubsetRandomSampler
+from torchvision.transforms import Compose
+from torchvision.transforms import Normalize
+from torchvision.transforms import RandomHorizontalFlip
+
+# from helper_function import make_balanced_sampler
 plt.style.use('fivethirtyeight')
 
 
 images, labels = generate_dataset(
-    img_size=5, n_images=300, binary=True, seed=13)
+    img_size=5, n_images=300, binary=True, seed=13,
+)
 
 plot_images(images, labels, n_plot=30)
 
@@ -46,14 +49,18 @@ class TransformedTensorDataset(Dataset):
         return len(self.x)
 
 
-composer = Compose([RandomHorizontalFlip(
-    p=0.5), Normalize(mean=(.5), std=(.5))])
+composer = Compose([
+    RandomHorizontalFlip(
+        p=0.5,
+    ), Normalize(mean=(.5), std=(.5)),
+])
 dataset = TransformedTensorDataset(x_tensor, y_tensor, composer)
 train_idx, val_idx = index_splitter(len(x_tensor), [80, 20])
 train_sampler = SubsetRandomSampler(train_idx)
 val_sampler = SubsetRandomSampler(val_idx)
 train_loader = DataLoader(
-    dataset=dataset, batch_size=16, sampler=train_sampler)
+    dataset=dataset, batch_size=16, sampler=train_sampler,
+)
 val_loader = DataLoader(dataset=dataset, batch_size=16, sampler=val_sampler)
 # x_train_tensor = x_tensor[train_idx]
 # y_train_tensor = y_tensor[train_idx]
@@ -91,8 +98,10 @@ binary_loss_fn = nn.BCELoss()
 
 n_epochs = 100
 ckpt_interval = 10
-sbs_logistic = StepbyStep(model_logistic, binary_loss_fn,
-                          optimizer_logistic, ckpt_interval)
+sbs_logistic = StepbyStep(
+    model_logistic, binary_loss_fn,
+    optimizer_logistic, ckpt_interval,
+)
 sbs_logistic.set_loaders(train_loader, val_loader)
 sbs_logistic.train(n_epochs)
 sbs_logistic.plot_losses()
@@ -100,3 +109,11 @@ sbs_logistic.plot_losses()
 
 lr = 0.1
 torch.manual_seed()
+model_nn = nn.Sequential()
+model_nn.add_module('flatten', nn.Flatten())
+model_nn.add_module('hidden0', nn.Linear(25, 5, bias=False))
+model_nn.add_model('hidden1', nn.Linear(5, 3, bias=False))
+model_nn.add_model('output', nn.Linear(3, 1, bias=False))
+model_nn.add_module('sigmoid', nn.Sigmoid())
+optimizer_nn = optim.SGD(model_nn.parameters(), lr=lr)
+binary_loss_fn = nn.BCELoss()

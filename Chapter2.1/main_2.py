@@ -1,12 +1,14 @@
-from engine import StepbyStep
+from __future__ import annotations
+
+import matplotlib.pyplot as plt
 import numpy as np
 import torch
-import torch.optim as optim
 import torch.nn as nn
-import torch.functional as F
-from torch.utils.data import DataLoader, TensorDataset, random_split
-from torch.utils.tensorboard import SummaryWriter
-import matplotlib.pyplot as plt
+import torch.optim as optim
+from engine import StepbyStep
+from torch.utils.data import DataLoader
+from torch.utils.data import random_split
+from torch.utils.data import TensorDataset
 plt.style.use('fivethirtyeight')
 
 
@@ -70,7 +72,8 @@ print(sbs.total_epochs)
 
 
 sbs.load_checkpoint(
-    '/Users/shreyachauhan/Deep_Learning_with_Pytorch/Chapter2.1/checkpoints/latest.pth')
+    '/Users/shreyachauhan/Deep_Learning_with_Pytorch/Chapter2.1/ checkpoints/latest.pth',  # noqa
+)
 sbs.set_loaders(train_loader, val_loader)
 sbs.train(n_epochs=80)
 print(model.state_dict())

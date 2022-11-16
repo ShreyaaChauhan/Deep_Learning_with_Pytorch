@@ -1,15 +1,10 @@
+from __future__ import annotations
+
 import numpy as np
-from sklearn.linear_model import LinearRegression
-
 import torch
-import torch.optim as optim
 import torch.nn as nn
-from torch.utils.data import Dataset, TensorDataset, DataLoader
-from torch.utils.data.dataset import random_split
-from torch.utils.tensorboard import SummaryWriter
+import torch.optim as optim
 
-import matplotlib.pyplot as plt
-plt.style.use('fivethirtyeight')
 
 # data generation
 true_b = 1

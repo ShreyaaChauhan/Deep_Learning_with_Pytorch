@@ -1,13 +1,19 @@
+from __future__ import annotations
+
+import os
+import shutil
+
 import matplotlib.pyplot as plt
 import numpy as np
 import torch
-import shutil
-import os
 import torch.nn as nn
 import torch.optim as optim
-from helper_functions import make_train_step_fn, make_val_step_fn, mini_batch, save_checkpoint
-from sklearn.linear_model import LinearRegression
-from torch.utils.data import DataLoader, Dataset, TensorDataset
+from helper_functions import make_train_step_fn
+from helper_functions import make_val_step_fn
+from helper_functions import mini_batch
+from helper_functions import save_checkpoint
+from torch.utils.data import DataLoader
+from torch.utils.data import TensorDataset
 from torch.utils.data.dataset import random_split
 from torch.utils.tensorboard import SummaryWriter
 
@@ -55,7 +61,7 @@ model = nn.Sequential(nn.Linear(1, 1).to(device))
 optimizer = optim.SGD(model.parameters(), lr=lr)
 
 # MSE loss function
-loss_fn = nn.MSELoss(reduction="mean")
+loss_fn = nn.MSELoss(reduction='mean')
 
 # Create a train_step function for our model, loss dunction and optimizer
 train_step = make_train_step_fn(model, loss_fn, optimizer)
@@ -79,13 +85,16 @@ n_checkpoint_epoch = 50
 try:
     shutil.rmtree(
         os.path.join(
-            parent_folder_path, "checkpoints"))
-except:
-    pass
+            parent_folder_path, 'checkpoints',
+        ),
+    )
+except Exception as e:
+    print(e)
 
 for epoch in range(n_epochs):
     ckpt_dir_path = os.path.join(
-        os.path.abspath('.'), 'Chapter2', 'checkpoints')
+        os.path.abspath('.'), 'Chapter2', 'checkpoints',
+    )
     os.makedirs(ckpt_dir_path, exist_ok=True)
     loss = mini_batch(device, train_loader, train_step)
     losses.append(loss)
@@ -94,8 +103,11 @@ for epoch in range(n_epochs):
         val_loss = mini_batch(device, val_loader, val_step)
         val_losses.append(val_loss)
 
-    writer.add_scalars(main_tag='loss', tag_scalar_dict={
-        'training': loss, 'validation': val_loss}, global_step=epoch)
+    writer.add_scalars(
+        main_tag='loss', tag_scalar_dict={
+            'training': loss, 'validation': val_loss,
+        }, global_step=epoch,
+    )
 
     if epoch % n_checkpoint_epoch == 0:
 
@@ -104,20 +116,23 @@ for epoch in range(n_epochs):
             'model_state_dict': model.state_dict(),
             'optimizer_state_dict': optimizer.state_dict(),
             'loss': losses,
-            'val_loss': val_losses
+            'val_loss': val_losses,
         }
         save_checkpoint(epoch, checkpoint)
 save_checkpoint(epoch, checkpoint, LATEST=True)
 
-checkpoint = torch.load(os.path.join(
-    parent_folder_path, "checkpoints/latest.pth"))
+checkpoint = torch.load(
+    os.path.join(
+        parent_folder_path, 'checkpoints/latest.pth',
+    ),
+)
 
-model.load_state_dict(checkpoint["model_state_dict"])
-optimizer.load_state_dict(checkpoint["optimizer_state_dict"])
+model.load_state_dict(checkpoint['model_state_dict'])
+optimizer.load_state_dict(checkpoint['optimizer_state_dict'])
 
-saved_epoch = checkpoint["epoch"]
-saved_losses = checkpoint["loss"]
-saved_val_losses = checkpoint["val_loss"]
+saved_epoch = checkpoint['epoch']
+saved_losses = checkpoint['loss']
+saved_val_losses = checkpoint['val_loss']
 epochs = 200
 model.train()
 # for epoch in range(saved_epoch, epochs + 1):

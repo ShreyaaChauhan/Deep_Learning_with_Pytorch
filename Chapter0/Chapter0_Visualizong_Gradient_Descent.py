@@ -1,6 +1,6 @@
+from __future__ import annotations
+
 import numpy as np
-from sklearn.linear_model import LinearRegression
-from sklearn.preprocessing import StandardScaler
 
 # Model y = b + wx + e
 true_b = 1
@@ -8,7 +8,8 @@ true_w = 2
 N = 100
 
 # Data Generation
-# It guarantees that every time we run this code, same random numbers will be generated
+# It guarantees that every time we
+# run this code, same random numbers will be generated
 np.random.seed(42)
 x = np.random.rand(N, 1)
 epsilon = (.1 * np.random.randn(N, 1))

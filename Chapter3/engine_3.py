@@ -1,18 +1,17 @@
-import numpy as np
+from __future__ import annotations
+
 import datetime
 import os
-import torch
 import shutil
-import torch.optim as optim
-import torch.nn as nn
-import torch.functional as F
-from torch.utils.data import DataLoader, TensorDataset, random_split
-from torch.utils.tensorboard import SummaryWriter
+
 import matplotlib.pyplot as plt
+import numpy as np
+import torch
+from torch.utils.tensorboard import SummaryWriter
 plt.style.use('fivethirtyeight')
 
 
-class StepbyStep(object):
+class StepbyStep:
     def __init__(self, model, loss_fn, optimizer, ckpt_interval):
         self.model = model
         self.loss_fn = loss_fn
@@ -39,7 +38,9 @@ class StepbyStep(object):
         except RuntimeError:
             self.device = 'cuda' if torch.cuda.is_available() else 'cpu'
             print(
-                f"Couldn't send it to {device}, sending it to {self.device} instead.")
+                f"Couldn't send it to {device}, \
+                    sending it to {self.device} instead.",
+            )
             self.model.to(self.device)
 
     def set_loaders(self, train_loader, val_loader=None):
@@ -104,8 +105,11 @@ class StepbyStep(object):
             try:
                 shutil.rmtree(
                     os.path.join(
-                        self.parent_folder_path, "checkpoints"))
-            except:
+                        self.parent_folder_path, 'checkpoints',
+                    ),
+                )
+            except Exception as e:
+                print(e)
                 pass
         for epoch in range(self.total_epochs, n_epochs):
             self.total_epochs += 1
@@ -121,9 +125,11 @@ class StepbyStep(object):
                 if val_loss is not None:
                     scalars.update({'validation': val_loss})
                 # Records both losses for each epoch under the main tag "loss"
-                self.writer.add_scalars(main_tag='loss',
-                                        tag_scalar_dict=scalars,
-                                        global_step=epoch)
+                self.writer.add_scalars(
+                    main_tag='loss',
+                    tag_scalar_dict=scalars,
+                    global_step=epoch,
+                )
         self.save_checkpoint(epoch, LATEST=True)
         if self.writer:
             self.writer.flush()
@@ -131,17 +137,21 @@ class StepbyStep(object):
     def save_checkpoint(self, epoch, LATEST: bool = False):
 
         ckpt_dir_path = os.path.join(
-            os.path.abspath(os.path.dirname(__file__)), 'checkpoints')
+            os.path.abspath(os.path.dirname(__file__)), 'checkpoints',
+        )
         os.makedirs(ckpt_dir_path, exist_ok=True)
 
         # Builds dictionary with all elements for resuming training
-        checkpoint = {'epoch': self.total_epochs,
-                      'model_state_dict': self.model.state_dict(),
-                      'optimizer_state_dict': self.optimizer.state_dict(),
-                      'loss': self.losses,
-                      'val_loss': self.val_losses}
-        checkpoint_name = "epoch_{ckpt_no}.pth".format(
-            ckpt_no=epoch) if not LATEST else "latest.pth"
+        checkpoint = {
+            'epoch': self.total_epochs,
+            'model_state_dict': self.model.state_dict(),
+            'optimizer_state_dict': self.optimizer.state_dict(),
+            'loss': self.losses,
+            'val_loss': self.val_losses,
+        }
+        checkpoint_name = 'epoch_{ckpt_no}.pth'.format(
+            ckpt_no=epoch,
+        ) if not LATEST else 'latest.pth'
         filename = os.path.join(ckpt_dir_path, checkpoint_name)
         torch.save(checkpoint, filename)
 
@@ -173,7 +183,7 @@ class StepbyStep(object):
         plt.ylabel('Loss')
         plt.legend()
         plt.tight_layout()
-        fig.savefig(os.path.join(self.parent_folder_path, "plot_losses"))
+        fig.savefig(os.path.join(self.parent_folder_path, 'plot_losses'))
         return fig
 
     def add_graph(self):

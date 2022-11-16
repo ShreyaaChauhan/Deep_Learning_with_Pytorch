@@ -1,23 +1,28 @@
+from __future__ import annotations
+
 import numpy as np
-
 import torch
-import torch.optim as optim
 import torch.nn as nn
-import torch.functional as F
-from torch.utils.data import DataLoader, TensorDataset
-from torch.utils.tensorboard import SummaryWriter
+import torch.optim as optim
+from engine_3 import StepbyStep
+from helper_function_3 import precision_recall
+from helper_function_3 import sigmoid
+from helper_function_3 import split_cm
+from helper_function_3 import tpr_fpr
 from sklearn.datasets import make_moons
-from sklearn.preprocessing import StandardScaler
+from sklearn.metrics import confusion_matrix
+from sklearn.metrics import precision_recall_curve
+from sklearn.metrics import roc_curve
 from sklearn.model_selection import train_test_split
-from sklearn.metrics import confusion_matrix, roc_curve, precision_recall_curve, auc
-
-from engine import StepbyStep
-from helper_function import sigmoid, split_cm, tpr_fpr, precision_recall
+from sklearn.preprocessing import StandardScaler
+from torch.utils.data import DataLoader
+from torch.utils.data import TensorDataset
 
 # data generation
 X, y = make_moons(n_samples=100, noise=0.3, random_state=0)
 X_train, X_val, y_train, y_val = train_test_split(
-    X, y, test_size=.2, random_state=13)
+    X, y, test_size=.2, random_state=13,
+)
 
 sc = StandardScaler()
 sc.fit(X_train)

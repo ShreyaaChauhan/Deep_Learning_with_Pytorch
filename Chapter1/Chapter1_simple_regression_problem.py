@@ -1,12 +1,13 @@
+from __future__ import annotations
 
-from sklearn.linear_model import LinearRegression
-from torchviz import make_dot
-import torch
-import torch.optim as optim
-import torch.nn as nn
-import numpy as np
 import matplotlib.pyplot as plt
-from Chapter1.chapter1_figures import figure1, figure3
+import numpy as np
+import torch
+import torch.nn as nn
+import torch.optim as optim
+
+from Chapter1.chapter1_figures import figure1
+from Chapter1.chapter1_figures import figure3
 plt.style.use('fivethirtyeight')
 
 
@@ -31,9 +32,11 @@ val_idx = idx[int(N*.8):]
 
 # Generates train and validation sets
 x_train, y_train = torch.as_tensor(x[train_idx]).float().to(
-    device), torch.as_tensor(y[train_idx]).float().to(device)
+    device,
+), torch.as_tensor(y[train_idx]).float().to(device)
 x_val, y_val = torch.as_tensor(x[val_idx]).float().to(
-    device), torch.as_tensor(y[val_idx]).float().to(device)
+    device,
+), torch.as_tensor(y[val_idx]).float().to(device)
 
 
 figure1(x_train, y_train, x_val, y_val)
@@ -49,17 +52,24 @@ lr = 0.1
 class ManualLinearRegression(nn.Module):
     def __init__(self):
         super().__init__()
-        self.b = nn.Parameter(torch.randn(
-            1, requires_grad=True, dtype=torch.float))
-        self.w = nn.Parameter(torch.randn(1,
-                                          requires_grad=True,
-                                          dtype=torch.float))
+        self.b = nn.Parameter(
+            torch.randn(
+                1, requires_grad=True, dtype=torch.float,
+            ),
+        )
+        self.w = nn.Parameter(
+            torch.randn(
+                1,
+                requires_grad=True,
+                dtype=torch.float,
+            ),
+        )
 
     def forward(self, x):
         return self.b + self.w * x
 
 
-#model = ManualLinearRegression().to(device)
+# model = ManualLinearRegression().to(device)
 model = nn.Sequential(nn.Linear(1, 5), nn.Linear(5, 1)).to(device)
 # Defines a SGD optimizer to update the parameters
 optimizer = optim.SGD(model.parameters(), lr=lr)

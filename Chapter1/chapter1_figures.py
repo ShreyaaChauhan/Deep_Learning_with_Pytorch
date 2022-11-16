@@ -1,11 +1,14 @@
-import numpy as np
+from __future__ import annotations
+
 import matplotlib.pyplot as plt
+import numpy as np
 from sklearn.linear_model import LinearRegression
 plt.style.use('fivethirtyeight')
 
 
 def fit_model(x_train, y_train):
-    # Fits a linear regression to find the actual b and w that minimize the loss
+    # Fits a linear regression to find the
+    #  actual b and w that minimize the loss
     regression = LinearRegression()
     regression.fit(x_train, y_train)
     b_minimum, w_minimum = regression.intercept_[0], regression.coef_[0][0]
@@ -28,7 +31,8 @@ def figure1(x_train, y_train, x_val, y_val):
     ax[1].set_title('Generated Data - Validation')
     fig.tight_layout()
     fig.savefig(
-        "/Users/shreyachauhan/Deep_Learning_with_Pytorch/figures/figure1.jpg")
+        '/Users/shreyachauhan/Deep_Learning_with_Pytorch/figures/figure1.jpg',
+    )
     return fig, ax
 
 
@@ -47,14 +51,20 @@ def figure3(x_train, y_train):
     # Dataset
     ax.scatter(x_train, y_train)
     # Predictions
-    ax.plot(x_range, yhat_range, label='Final model\'s predictions',
-            c='k', linestyle='--')
+    ax.plot(
+        x_range, yhat_range, label='Final model\'s predictions',
+        c='k', linestyle='--',
+    )
 
     # Annotations
-    ax.annotate('b = {:.4f} w = {:.4f}'.format(
-        b_minimum, w_minimum), xy=(.4, 1.5), c='k', rotation=34)
+    ax.annotate(
+        'b = {:.4f} w = {:.4f}'.format(
+            b_minimum, w_minimum,
+        ), xy=(.4, 1.5), c='k', rotation=34,
+    )
     ax.legend(loc=0)
     fig.tight_layout()
     fig.savefig(
-        "/Users/shreyachauhan/Deep_Learning_with_Pytorch/figures/figure3.jpg")
+        '/Users/shreyachauhan/Deep_Learning_with_Pytorch/figures/figure3.jpg',
+    )
     return fig, ax

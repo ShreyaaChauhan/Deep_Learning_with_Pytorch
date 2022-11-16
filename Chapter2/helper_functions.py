@@ -1,7 +1,10 @@
+from __future__ import annotations
+
+import os
 
 import numpy as np
-import os 
 import torch
+
 
 def make_train_step_fn(model, loss_fn, optimizer):
     # Builds function that performs a step in the train loop
@@ -36,7 +39,8 @@ def make_val_step_fn(model, loss_fn):
         yhat = model(x)
         # Step 2 - Computes the loss
         loss = loss_fn(yhat, y)
-        # There is no need to compute Steps 3 and 4, since we don't update parameters during evaluation
+        # There is no need to compute Steps 3
+        # and 4, since we don't update parameters during evaluation
         return loss.item()
 
     return perform_val_step_fn
@@ -54,14 +58,14 @@ def mini_batch(device, data_loader, step_fn):
     loss = np.mean(mini_batch_losses)
     return loss
 
-def save_checkpoint(epoch:int, checkpoint:dict, LATEST:bool=False):
+
+def save_checkpoint(epoch: int, checkpoint: dict, LATEST: bool = False):
     ckpt_dir_path = os.path.join(
-         os.path.abspath(os.path.dirname(__file__)), 'checkpoints')
+        os.path.abspath(os.path.dirname(__file__)), 'checkpoints',
+    )
     os.makedirs(ckpt_dir_path, exist_ok=True)
     checkpoint = checkpoint
-    checkpoint_name = "epoch_{ckpt_no}.pth".format(ckpt_no = epoch) if not LATEST else "latest.pth"
+    checkpoint_name = f'epoch_{epoch}.pth' if not LATEST else 'latest.pth'
     checkpoint_name = os.path.join(ckpt_dir_path, checkpoint_name)
     torch.save(checkpoint, checkpoint_name)
-    print("checkpoint saved", checkpoint_name)
-        
-    
+    print('checkpoint saved', checkpoint_name)
