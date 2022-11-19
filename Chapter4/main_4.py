@@ -4,7 +4,7 @@ import matplotlib.pyplot as plt
 import torch
 import torch.nn as nn
 import torch.optim as optim
-from engine import StepbyStep
+from engine_4 import StepbyStep
 from helper_function import generate_dataset
 from helper_function import index_splitter
 from helper_function import plot_images
@@ -79,7 +79,7 @@ val_loader = DataLoader(dataset=dataset, batch_size=16, sampler=val_sampler)
 # train_loader = DataLoader(dataset=train_dataset,
 #                           batch_size=16, sampler=sampler)
 # val_loader = DataLoader(dataset=val_dataset, batch_size=16)
-
+"""
 # Sets learning rate - this is "eta" ~ the "n" like Greek letter
 lr = 0.1
 
@@ -104,16 +104,32 @@ sbs_logistic = StepbyStep(
 )
 sbs_logistic.set_loaders(train_loader, val_loader)
 sbs_logistic.train(n_epochs)
-sbs_logistic.plot_losses()
+sbs_logistic.plot_losses()"""
 
 
 lr = 0.1
-torch.manual_seed()
+ckpt_interval = 10
+torch.manual_seed(17)
 model_nn = nn.Sequential()
 model_nn.add_module('flatten', nn.Flatten())
 model_nn.add_module('hidden0', nn.Linear(25, 5, bias=False))
-model_nn.add_model('hidden1', nn.Linear(5, 3, bias=False))
-model_nn.add_model('output', nn.Linear(3, 1, bias=False))
+model_nn.add_module('hidden1', nn.Linear(5, 3, bias=False))
+model_nn.add_module('output', nn.Linear(3, 1, bias=False))
 model_nn.add_module('sigmoid', nn.Sigmoid())
-optimizer_nn = optim.SGD(model_nn.parameters(), lr=lr)
+# Defines a SGD optimizer to update the parameters
+optimizer_logistic = optim.SGD(model_nn.parameters(), lr=lr)
+
+# Defines a binary cross entropy loss function
 binary_loss_fn = nn.BCELoss()
+
+n_epochs = 100
+ckpt_interval = 10
+sbs_logistic = StepbyStep(
+    model_nn, binary_loss_fn,
+    optimizer_logistic, ckpt_interval,
+)
+sbs_logistic.set_loaders(train_loader, val_loader)
+sbs_logistic.train(n_epochs)
+sbs_logistic.plot_losses()
+print(sbs_logistic.count_parameters())
+print(model_nn[1].weight.data.numpy().shape)
