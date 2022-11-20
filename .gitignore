@@ -28,6 +28,7 @@ share/python-wheels/
 MANIFEST
 checkpoints/
 runs/
+Datasets/
 Sequential(  (0): Linear(in_features=1, out_features=1, bias=True))/
 # PyInstaller
 #  Usually these files are written by a python script from a template
